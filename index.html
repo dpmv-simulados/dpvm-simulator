@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador DPVM - 280 Questões</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos adicionais para a nova funcionalidade */
+        .quiz-config {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #dee2e6;
+        }
+        
+        .config-group {
+            margin: 10px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        select, input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+        
+        .stats {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        
+        #all-questions-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📚 Simulador DPVM - Sistema de Provas</h1>
+        <p class="subtitle">Treinamento de Dynamic Positioning Vessel Maintainer</p>
+        
+        <div class="quiz-config">
+            <h2>📋 Configuração da Prova</h2>
+            
+            <div class="config-group">
+                <label for="quiz-mode">Modo da Prova:</label>
+                <select id="quiz-mode">
+                    <option value="random-40">40 Questões Aleatórias</option>
+                    <option value="all-questions">Todas as 280 Questões</option>
+                    <option value="custom">Número Personalizado</option>
+                </select>
+            </div>
+            
+            <div class="config-group" id="custom-number-group" style="display: none;">
+                <label for="custom-number">Número de Questões (1-280):</label>
+                <input type="number" id="custom-number" min="1" max="280" value="40">
+            </div>
+            
+            <div class="config-group">
+                <label for="feedback-mode">Modo de Feedback:</label>
+                <select id="feedback-mode">
+                    <option value="instant">Feedback Instantâneo</option>
+                    <option value="final">Feedback ao Final</option>
+                </select>
+            </div>
+            
+            <div id="all-questions-warning">
+                ⚠️ <strong>Atenção:</strong> Todas as 280 questões serão incluídas. 
+                Esta prova pode levar bastante tempo para completar.
+            </div>
+            
+            <div class="stats">
+                <strong>Estatísticas:</strong>
+                <div id="total-questions">Total de questões disponíveis: 280</div>
+                <div id="selected-questions">Questões selecionadas: 40</div>
+                <div id="estimated-time">Tempo estimado: 20-30 minutos</div>
+            </div>
+            
+            <button id="start-btn" class="btn-start">▶️ Iniciar Prova</button>
+            <button id="instructions-btn" class="btn-secondary">📖 Instruções</button>
+        </div>
+
+        <div id="quiz-container" style="display: none;">
+            <div class="quiz-header">
+                <div id="quiz-progress">
+                    <div class="progress-bar">
+                        <div id="progress-fill"></div>
+                    </div>
+                    <div id="question-counter">Questão 1 de 40</div>
+                </div>
+                
+                <div class="quiz-stats">
+                    <span id="correct-count">✅ 0</span>
+                    <span id="incorrect-count">❌ 0</span>
+                    <span id="timer">⏱️ 00:00</span>
+                </div>
+            </div>
+            
+            <div id="question-card">
+                <div id="question-text"></div>
+                <div id="options-container"></div>
+                <div id="feedback"></div>
+            </div>
+            
+            <div class="navigation">
+                <button id="prev-btn" class="btn-nav">◀️ Anterior</button>
+                <button id="mark-btn" class="btn-secondary">🚩 Marcar para Revisão</button>
+                <button id="next-btn" class="btn-nav">Próxima ▶️</button>
+            </div>
+            
+            <div class="quiz-footer">
+                <button id="submit-btn" class="btn-submit" style="display: none;">📤 Finalizar Prova</button>
+                <button id="pause-btn" class="btn-secondary">⏸️ Pausar</button>
+                <div id="marked-questions" style="display: none;">
+                    🚩 <span id="marked-count">0</span> questões marcadas
+                </div>
+            </div>
+        </div>
+
+        <div id="result-container" style="display: none;">
+            <h2>📊 Resultado da Prova</h2>
+            
+            <div class="score-card">
+                <div class="score-circle">
+                    <span id="score-percentage">0%</span>
+                </div>
+                <div class="score-details">
+                    <p id="score-text">Você acertou 0 de 0 questões</p>
+                    <p id="score-grade">Classificação: --</p>
+                </div>
+            </div>
+            
+            <div class="result-details">
+                <h3>📈 Estatísticas Detalhadas</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Tempo Total:</span>
+                        <span id="total-time" class="stat-value">00:00</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Taxa de Acerto:</span>
+                        <span id="accuracy-rate" class="stat-value">0%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Questões Marcadas:</span>
+                        <span id="review-count" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Data:</span>
+                        <span id="test-date" class="stat-value"></span>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button id="review-btn" class="btn-secondary">🔍 Revisar Respostas</button>
+                    <button id="restart-btn" class="btn-start">🔄 Nova Prova</button>
+                    <button id="export-btn" class="btn-secondary">📤 Exportar Resultado</button>
+                </div>
+                
+                <div id="details-section" style="display: none;">
+                    <h4>📋 Detalhamento por Questão</h4>
+                    <div id="questions-details"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="instructions-container" style="display: none;">
+            <h2>📖 Instruções do Simulador</h2>
+            <div class="instructions-content">
+                <h3>🎯 Objetivo</h3>
+                <p>Este simulador foi desenvolvido para auxiliar no treinamento e preparação para certificação DPVM (Dynamic Positioning Vessel Maintainer).</p>
+                
+                <h3>⚙️ Configuração da Prova</h3>
+                <ul>
+                    <li><strong>40 Questões Aleatórias:</strong> Seleção aleatória de 40 questões do banco de 280</li>
+                    <li><strong>Todas as Questões:</strong> Prova completa com todas as 280 questões</li>
+                    <li><strong>Personalizado:</strong> Escolha o número de questões desejado</li>
+                </ul>
+                
+                <h3>🎮 Modos de Operação</h3>
+                <ul>
+                    <li><strong>Feedback Instantâneo:</strong> Veja imediatamente se acertou ou errou</li>
+                    <li><strong>Feedback ao Final:</strong> Veja os resultados apenas ao terminar a prova</li>
+                </ul>
+                
+                <h3>📊 Sistema de Pontuação</h3>
+                <ul>
+                    <li><strong>90-100%:</strong> Excelente</li>
+                    <li><strong>70-89%:</strong> Bom</li>
+                    <li><strong>50-69%:</strong> Satisfatório</li>
+                    <li><strong>0-49%:</strong> Precisa estudar mais</li>
+                </ul>
+                
+                <button id="close-instructions-btn" class="btn-start">✅ Entendi, vamos começar!</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>DPVM Simulator v2.0 | Banco de 280 questões | Desenvolvido para treinamento</p>
+    </footer>
+
+    <script src="questions.js"></script>
+    <script>
+        // Atualização do quiz.js para suportar todas as questões
+        // Código JavaScript atualizado será fornecido separadamente
+    </script>
+    <script src="quiz.js"></script>
+</body>
+</html>
