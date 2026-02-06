@@ -3,226 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulador DPVM - 280 Questões</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        /* Estilos adicionais para a nova funcionalidade */
-        .quiz-config {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border: 1px solid #dee2e6;
-        }
-        
-        .config-group {
-            margin: 10px 0;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        
-        select, input[type="number"] {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ced4da;
-            border-radius: 4px;
-            margin-bottom: 10px;
-        }
-        
-        .stats {
-            background: #e9ecef;
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 0.9em;
-        }
-        
-        #all-questions-warning {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            display: none;
-        }
-    </style>
+    <title>Simulador DPVM - Certificação Dynamic Positioning Vessel Maintainer</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>📚 Simulador DPVM - Sistema de Provas</h1>
-        <p class="subtitle">Treinamento de Dynamic Positioning Vessel Maintainer</p>
-        
-        <div class="quiz-config">
-            <h2>📋 Configuração da Prova</h2>
-            
-            <div class="config-group">
-                <label for="quiz-mode">Modo da Prova:</label>
-                <select id="quiz-mode">
-                    <option value="random-40">40 Questões Aleatórias</option>
-                    <option value="all-questions">Todas as 280 Questões</option>
-                    <option value="custom">Número Personalizado</option>
-                </select>
-            </div>
-            
-            <div class="config-group" id="custom-number-group" style="display: none;">
-                <label for="custom-number">Número de Questões (1-280):</label>
-                <input type="number" id="custom-number" min="1" max="280" value="40">
-            </div>
-            
-            <div class="config-group">
-                <label for="feedback-mode">Modo de Feedback:</label>
-                <select id="feedback-mode">
-                    <option value="instant">Feedback Instantâneo</option>
-                    <option value="final">Feedback ao Final</option>
-                </select>
-            </div>
-            
-            <div id="all-questions-warning">
-                ⚠️ <strong>Atenção:</strong> Todas as 280 questões serão incluídas. 
-                Esta prova pode levar bastante tempo para completar.
-            </div>
-            
-            <div class="stats">
-                <strong>Estatísticas:</strong>
-                <div id="total-questions">Total de questões disponíveis: 280</div>
-                <div id="selected-questions">Questões selecionadas: 40</div>
-                <div id="estimated-time">Tempo estimado: 20-30 minutos</div>
-            </div>
-            
-            <button id="start-btn" class="btn-start">▶️ Iniciar Prova</button>
-            <button id="instructions-btn" class="btn-secondary">📖 Instruções</button>
-        </div>
-
-        <div id="quiz-container" style="display: none;">
-            <div class="quiz-header">
-                <div id="quiz-progress">
-                    <div class="progress-bar">
-                        <div id="progress-fill"></div>
-                    </div>
-                    <div id="question-counter">Questão 1 de 40</div>
+        <!-- Tela de Login/Registro -->
+        <div id="login-screen" class="screen active">
+            <div class="login-container">
+                <div class="logo">
+                    <i class="fas fa-ship"></i>
+                    <h1>Simulador DPVM</h1>
+                </div>
+                <p class="subtitle">Preparação para Certificação Dynamic Positioning Vessel Maintainer</p>
+                
+                <div class="form-group">
+                    <label for="user-name">Digite seu nome:</label>
+                    <input type="text" id="user-name" placeholder="Seu nome completo" maxlength="50">
+                    <div class="input-hint">O nome será usado no histórico de resultados</div>
                 </div>
                 
-                <div class="quiz-stats">
-                    <span id="correct-count">✅ 0</span>
-                    <span id="incorrect-count">❌ 0</span>
-                    <span id="timer">⏱️ 00:00</span>
+                <div class="button-group">
+                    <button id="start-test-btn" class="btn btn-primary">
+                        <i class="fas fa-play"></i> Iniciar Novo Simulado
+                    </button>
+                    <button id="view-history-btn" class="btn btn-secondary">
+                        <i class="fas fa-history"></i> Ver Histórico
+                    </button>
                 </div>
-            </div>
-            
-            <div id="question-card">
-                <div id="question-text"></div>
-                <div id="options-container"></div>
-                <div id="feedback"></div>
-            </div>
-            
-            <div class="navigation">
-                <button id="prev-btn" class="btn-nav">◀️ Anterior</button>
-                <button id="mark-btn" class="btn-secondary">🚩 Marcar para Revisão</button>
-                <button id="next-btn" class="btn-nav">Próxima ▶️</button>
-            </div>
-            
-            <div class="quiz-footer">
-                <button id="submit-btn" class="btn-submit" style="display: none;">📤 Finalizar Prova</button>
-                <button id="pause-btn" class="btn-secondary">⏸️ Pausar</button>
-                <div id="marked-questions" style="display: none;">
-                    🚩 <span id="marked-count">0</span> questões marcadas
+                
+                <div class="test-info">
+                    <h3><i class="fas fa-info-circle"></i> Informações do Teste</h3>
+                    <ul>
+                        <li><i class="fas fa-question-circle"></i> 40 questões por simulado</li>
+                        <li><i class="fas fa-random"></i> Questões aleatórias por assunto</li>
+                        <li><i class="fas fa-percentage"></i> 70% de acerto para aprovação</li>
+                        <li><i class="fas fa-redo"></i> Questões erradas são repetidas</li>
+                        <li><i class="fas fa-chart-line"></i> Acompanhe seu progresso</li>
+                    </ul>
                 </div>
             </div>
         </div>
 
-        <div id="result-container" style="display: none;">
-            <h2>📊 Resultado da Prova</h2>
-            
-            <div class="score-card">
-                <div class="score-circle">
-                    <span id="score-percentage">0%</span>
+        <!-- Tela do Simulado -->
+        <div id="test-screen" class="screen">
+            <div class="test-header">
+                <div class="user-info">
+                    <span id="current-user"></span>
+                    <button id="exit-test-btn" class="btn-small btn-secondary">
+                        <i class="fas fa-sign-out-alt"></i> Sair
+                    </button>
                 </div>
-                <div class="score-details">
-                    <p id="score-text">Você acertou 0 de 0 questões</p>
-                    <p id="score-grade">Classificação: --</p>
+                
+                <div class="progress-container">
+                    <div class="progress-info">
+                        <span>Questão <span id="current-question-num">1</span> de <span id="total-questions">40</span></span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                </div>
+                
+                <div class="score-info">
+                    <div class="score-box">
+                        <span class="score-label">Corretas</span>
+                        <span id="correct-count" class="score-value">0</span>
+                    </div>
+                    <div class="score-box">
+                        <span class="score-label">Erradas</span>
+                        <span id="wrong-count" class="score-value">0</span>
+                    </div>
+                    <div class="score-box">
+                        <span class="score-label">% Atual</span>
+                        <span id="current-percent" class="score-value">0%</span>
+                    </div>
                 </div>
             </div>
-            
-            <div class="result-details">
-                <h3>📈 Estatísticas Detalhadas</h3>
-                <div class="stats-grid">
-                    <div class="stat-item">
-                        <span class="stat-label">Tempo Total:</span>
-                        <span id="total-time" class="stat-value">00:00</span>
+
+            <div class="test-content">
+                <div class="question-container">
+                    <div class="question-header">
+                        <span class="question-id" id="question-id">Q1</span>
+                        <span class="question-topic" id="question-topic">Introdução DPVM</span>
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Taxa de Acerto:</span>
-                        <span id="accuracy-rate" class="stat-value">0%</span>
+                    
+                    <div class="question-text" id="question-text">
+                        Carregando questão...
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Questões Marcadas:</span>
-                        <span id="review-count" class="stat-value">0</span>
+                    
+                    <div class="options-container" id="options-container">
+                        <!-- Opções serão inseridas aqui via JavaScript -->
                     </div>
-                    <div class="stat-item">
-                        <span class="stat-label">Data:</span>
-                        <span id="test-date" class="stat-value"></span>
+                    
+                    <div class="answer-feedback" id="answer-feedback">
+                        <!-- Feedback será inserido aqui -->
+                    </div>
+                </div>
+                
+                <div class="navigation-buttons">
+                    <button id="prev-question-btn" class="btn btn-secondary" disabled>
+                        <i class="fas fa-arrow-left"></i> Anterior
+                    </button>
+                    <button id="next-question-btn" class="btn btn-primary">
+                        Próxima <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button id="finish-test-btn" class="btn btn-warning">
+                        <i class="fas fa-flag-checkered"></i> Finalizar Simulado
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tela de Resultados -->
+        <div id="results-screen" class="screen">
+            <div class="results-container">
+                <div class="results-header">
+                    <h2><i class="fas fa-poll"></i> Resultado do Simulado</h2>
+                    <div class="results-user">Usuário: <span id="results-user-name"></span></div>
+                </div>
+                
+                <div class="results-summary">
+                    <div class="result-card result-card-pass" id="pass-card">
+                        <h3><i class="fas fa-check-circle"></i> Aprovado</h3>
+                        <div class="result-score" id="final-score-pass">0%</div>
+                        <p>Parabéns! Você atingiu a pontuação mínima.</p>
+                    </div>
+                    
+                    <div class="result-card result-card-fail" id="fail-card">
+                        <h3><i class="fas fa-times-circle"></i> Reprovado</h3>
+                        <div class="result-score" id="final-score-fail">0%</div>
+                        <p>Continue estudando! Tente novamente.</p>
+                    </div>
+                    
+                    <div class="result-details">
+                        <h3><i class="fas fa-chart-pie"></i> Detalhamento</h3>
+                        <div class="detail-row">
+                            <span>Total de Questões:</span>
+                            <span id="detail-total">0</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Questões Corretas:</span>
+                            <span id="detail-correct">0</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Questões Erradas:</span>
+                            <span id="detail-wrong">0</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Porcentagem:</span>
+                            <span id="detail-percent">0%</span>
+                        </div>
+                        <div class="detail-row">
+                            <span>Data e Hora:</span>
+                            <span id="detail-datetime">-</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="wrong-questions-container" id="wrong-questions-container">
+                    <h3><i class="fas fa-exclamation-circle"></i> Questões para Revisar</h3>
+                    <p>Estas questões serão repetidas no próximo simulado:</p>
+                    <div id="wrong-questions-list">
+                        <!-- Lista de questões erradas será inserida aqui -->
                     </div>
                 </div>
                 
                 <div class="action-buttons">
-                    <button id="review-btn" class="btn-secondary">🔍 Revisar Respostas</button>
-                    <button id="restart-btn" class="btn-start">🔄 Nova Prova</button>
-                    <button id="export-btn" class="btn-secondary">📤 Exportar Resultado</button>
-                </div>
-                
-                <div id="details-section" style="display: none;">
-                    <h4>📋 Detalhamento por Questão</h4>
-                    <div id="questions-details"></div>
+                    <button id="new-test-btn" class="btn btn-primary">
+                        <i class="fas fa-redo"></i> Novo Simulado
+                    </button>
+                    <button id="review-questions-btn" class="btn btn-secondary">
+                        <i class="fas fa-book"></i> Revisar Questões Erradas
+                    </button>
+                    <button id="back-to-home-btn" class="btn btn-outline">
+                        <i class="fas fa-home"></i> Voltar ao Início
+                    </button>
                 </div>
             </div>
         </div>
 
-        <div id="instructions-container" style="display: none;">
-            <h2>📖 Instruções do Simulador</h2>
-            <div class="instructions-content">
-                <h3>🎯 Objetivo</h3>
-                <p>Este simulador foi desenvolvido para auxiliar no treinamento e preparação para certificação DPVM (Dynamic Positioning Vessel Maintainer).</p>
+        <!-- Tela de Histórico -->
+        <div id="history-screen" class="screen">
+            <div class="history-container">
+                <div class="history-header">
+                    <h2><i class="fas fa-history"></i> Histórico de Resultados</h2>
+                    <button id="back-from-history-btn" class="btn-small btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Voltar
+                    </button>
+                </div>
                 
-                <h3>⚙️ Configuração da Prova</h3>
-                <ul>
-                    <li><strong>40 Questões Aleatórias:</strong> Seleção aleatória de 40 questões do banco de 280</li>
-                    <li><strong>Todas as Questões:</strong> Prova completa com todas as 280 questões</li>
-                    <li><strong>Personalizado:</strong> Escolha o número de questões desejado</li>
-                </ul>
+                <div class="history-controls">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="history-search" placeholder="Buscar por nome ou data...">
+                    </div>
+                    <button id="clear-history-btn" class="btn-small btn-warning">
+                        <i class="fas fa-trash"></i> Limpar Histórico
+                    </button>
+                </div>
                 
-                <h3>🎮 Modos de Operação</h3>
-                <ul>
-                    <li><strong>Feedback Instantâneo:</strong> Veja imediatamente se acertou ou errou</li>
-                    <li><strong>Feedback ao Final:</strong> Veja os resultados apenas ao terminar a prova</li>
-                </ul>
+                <div class="history-stats">
+                    <div class="stat-box">
+                        <span class="stat-label">Total de Simulados</span>
+                        <span id="total-tests" class="stat-value">0</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Taxa de Aprovação</span>
+                        <span id="pass-rate" class="stat-value">0%</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">Melhor Pontuação</span>
+                        <span id="best-score" class="stat-value">0%</span>
+                    </div>
+                </div>
                 
-                <h3>📊 Sistema de Pontuação</h3>
-                <ul>
-                    <li><strong>90-100%:</strong> Excelente</li>
-                    <li><strong>70-89%:</strong> Bom</li>
-                    <li><strong>50-69%:</strong> Satisfatório</li>
-                    <li><strong>0-49%:</strong> Precisa estudar mais</li>
-                </ul>
-                
-                <button id="close-instructions-btn" class="btn-start">✅ Entendi, vamos começar!</button>
+                <div class="history-list-container">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Data e Hora</th>
+                                <th>Questões</th>
+                                <th>Acertos</th>
+                                <th>%</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table-body">
+                            <!-- Histórico será inserido aqui -->
+                        </tbody>
+                    </table>
+                    <div id="no-history-message" class="empty-message">
+                        <i class="fas fa-inbox"></i>
+                        <p>Nenhum resultado de simulado encontrado.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <footer>
-        <p>DPVM Simulator v2.0 | Banco de 280 questões | Desenvolvido para treinamento</p>
-    </footer>
-
     <script src="questions.js"></script>
-    <script>
-        // Atualização do quiz.js para suportar todas as questões
-        // Código JavaScript atualizado será fornecido separadamente
-    </script>
-    <script src="quiz.js"></script>
+    <script src="results.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
