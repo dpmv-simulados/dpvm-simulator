@@ -10,7 +10,7 @@ const allQuestions = [
             "All the options.",
             "It's a new training scheme."
         ],
-        correctAnswer: 2,
+        correctAnswer: 3,
         explanation: "The DPVM scheme is a completely new training and certification scheme for Dynamic Positioning Vessel Maintainers.",
         topic: "Introdução DPVM"
     },
