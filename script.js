@@ -73,6 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
         userName: ''
     };
     
+    // Timer para avanço automático
+    let autoAdvanceTimer = null;
+    
     // Inicialização
     init();
     
@@ -165,6 +168,12 @@ document.addEventListener('DOMContentLoaded', function() {
             userName: userName
         };
         
+        // Cancelar qualquer timer pendente
+        if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = null;
+        }
+        
         // Obter questões para o teste
         currentTest.questions = selectQuestionsForTest(userName);
         
@@ -174,6 +183,11 @@ document.addEventListener('DOMContentLoaded', function() {
         // Atualizar interface
         currentUserSpan.textContent = `Usuário: ${userName}`;
         totalQuestions.textContent = currentTest.questions.length;
+        
+        // Resetar aparência do botão próxima
+        nextQuestionBtn.style.backgroundColor = '';
+        nextQuestionBtn.style.borderColor = '';
+        nextQuestionBtn.innerHTML = 'Próxima <i class="fas fa-arrow-right"></i>';
         
         // Mostrar primeira questão
         displayCurrentQuestion();
@@ -314,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Mostrar feedback se a questão já foi respondida
         if (userAnswer !== null && userAnswer.answered) {
-            showAnswerFeedback(question, userAnswer.isCorrect);
+            showAnswerFeedback(question, userAnswer.isCorrect, true);
         } else {
             answerFeedback.style.display = 'none';
             answerFeedback.className = 'answer-feedback';
@@ -326,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Se for a última questão, mudar texto do botão "Próxima"
         if (currentTest.currentQuestionIndex === currentTest.questions.length - 1) {
             nextQuestionBtn.textContent = 'Finalizar';
-            nextQuestionBtn.innerHTML = 'Finalizar <i class="fas fa-flag-checkered"></i>';
+            nextQuestionBtn.innerHTML = '<i class="fas fa-flag-checkered"></i> Finalizar Simulado';
         } else {
             nextQuestionBtn.textContent = 'Próxima';
             nextQuestionBtn.innerHTML = 'Próxima <i class="fas fa-arrow-right"></i>';
@@ -336,6 +350,12 @@ document.addEventListener('DOMContentLoaded', function() {
     function selectOption(optionIndex) {
         const question = currentTest.questions[currentTest.currentQuestionIndex];
         const isCorrect = optionIndex === question.correctAnswer;
+        
+        // Cancelar timer anterior se existir
+        if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = null;
+        }
         
         // Registrar resposta do usuário
         currentTest.userAnswers[currentTest.currentQuestionIndex] = {
@@ -352,19 +372,40 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         // Mostrar feedback
-        showAnswerFeedback(question, isCorrect);
+        showAnswerFeedback(question, isCorrect, false);
         
         // Atualizar interface
         updateProgress();
         displayCurrentQuestion();
+        
+        // AVANÇAR AUTOMATICAMENTE após 2 segundos (para dar tempo de ver o feedback)
+        // Apenas se não for a última questão
+        if (currentTest.currentQuestionIndex < currentTest.questions.length - 1) {
+            autoAdvanceTimer = setTimeout(() => {
+                currentTest.currentQuestionIndex++;
+                displayCurrentQuestion();
+                updateProgress();
+            }, 2000); // 2 segundos de delay
+        } else {
+            // Se for a última questão, destacar o botão de finalizar
+            nextQuestionBtn.style.backgroundColor = '#28a745';
+            nextQuestionBtn.style.borderColor = '#28a745';
+        }
     }
     
-    function showAnswerFeedback(question, isCorrect) {
+    function showAnswerFeedback(question, isCorrect, isReview = false) {
         answerFeedback.style.display = 'block';
         answerFeedback.className = `answer-feedback feedback-${isCorrect ? 'correct' : 'incorrect'}`;
         
         const icon = isCorrect ? 'fa-check-circle' : 'fa-times-circle';
         const title = isCorrect ? 'Resposta Correta!' : 'Resposta Incorreta';
+        
+        // Adicionar mensagem de "Avançando automaticamente..." apenas se não for revisão e não for última questão
+        const autoAdvanceMsg = !isReview && currentTest.currentQuestionIndex < currentTest.questions.length - 1 
+            ? '<div class="auto-advance-message">Avançando para próxima questão em 2 segundos...</div>'
+            : currentTest.currentQuestionIndex === currentTest.questions.length - 1
+            ? '<div class="auto-advance-message">Esta é a última questão. Clique em "Finalizar" para concluir o teste.</div>'
+            : '';
         
         answerFeedback.innerHTML = `
             <div class="feedback-title">
@@ -372,6 +413,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <span>${title}</span>
             </div>
             <div class="feedback-explanation">${question.explanation}</div>
+            ${autoAdvanceMsg}
         `;
     }
     
@@ -397,6 +439,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showPreviousQuestion() {
+        // Cancelar timer de avanço automático
+        if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = null;
+        }
+        
         if (currentTest.currentQuestionIndex > 0) {
             currentTest.currentQuestionIndex--;
             displayCurrentQuestion();
@@ -404,6 +452,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showNextQuestion() {
+        // Cancelar timer de avanço automático
+        if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = null;
+        }
+        
         // Se for a última questão, finalizar teste
         if (currentTest.currentQuestionIndex === currentTest.questions.length - 1) {
             finishTest();
@@ -415,6 +469,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function finishTest() {
+        // Cancelar timer de avanço automático
+        if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = null;
+        }
+        
         // Verificar se todas as questões foram respondidas
         const unanswered = currentTest.userAnswers.filter(a => a === null || !a.answered).length;
         
@@ -524,10 +584,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function backToHome() {
+        // Cancelar timer de avanço automático
+        if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = null;
+        }
+        
         showScreen('login');
     }
     
     function exitTest() {
+        // Cancelar timer de avanço automático
+        if (autoAdvanceTimer) {
+            clearTimeout(autoAdvanceTimer);
+            autoAdvanceTimer = null;
+        }
+        
         const confirmExit = confirm('Deseja realmente sair do teste? Seu progresso será perdido.');
         if (confirmExit) {
             showScreen('login');
